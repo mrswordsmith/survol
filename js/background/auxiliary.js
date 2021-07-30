@@ -32,11 +32,18 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
         // If the request isn't cached
         else {
             fetch(req.data.url)
-                .then((data) => { return req.data.noJSON ? data.text() : data.json(); })
-                .then((data) => {
+                .then(async (response) => { 
+                    const contentType = response.headers.get("Content-Type")
+                    if (contentType.startsWith('image/') || contentType.startsWith('audio/')) {
+                        res.data = await response.blob();
+                    } else {
+                        res.data = req.data.noJSON ? await response.text() : await response.json(); 
+                    }
+
                     res.data = data;
                     res.status = 'OK';
                     res.cached = false;
+                    res.contentType = contentType;
                     REQUEST_CACHE[req.data.url] = res;
                     sendResponse(res);
                 })

@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // The intent timeout is used to make sure the user wants to preview a certain link
     // by checking if the user hovers it for more than {intent} seconds.
     var intentTimeout = null;
-    var intent = 0.75; // Wait duration in seconds before loading the preview
+    var intent = 0.3; // Wait duration in seconds before loading the preview
 
     // Just in case some sites use the pushState js function to navigate across pages. Updates the current taba
     window.onpopstate = () => {
@@ -102,25 +102,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         clearTimeout(intentTimeout);
                         container.className = `survol-container ${darkTheme ? 'dark-theme' : ''} hidden`;
                         container.innerHTML = '';
+                        return;
                     }
+                    
+                    //get the popup dims
+                    let popupWidth = container.clientWidth;
+                    let popupHeight = container.clientHeight;
+                    //get the current scroll distance
+                    let scrolled = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop;
+    
+                    //calculate the popup positions
+                    //if the current mouse X position plus the popup width is greater than the width of the viewport set the popup to the left, else right
+                    let leftPosition = (e.pageX + popupWidth + buffer >= window.innerWidth) ? `${e.pageX - (popupWidth + buffer)}px` : `${e.pageX + buffer}px`;
+                    //if the current mouse Y position (mius scroll distance) plus the popup height is greater than viewport height, set the popup above mouse, else below
+                    let topPosition = ((e.pageY - scrolled) + popupHeight + buffer >= window.innerHeight) ? `${e.pageY - (popupHeight + buffer)}px` : `${e.pageY + buffer}px`;
+    
+                    //update the popup with the calculated values
+                    container.style.left = leftPosition;
+                    container.style.top = topPosition;
                 }
-
-                //get the popup dims
-                let popupWidth = container.clientWidth;
-                let popupHeight = container.clientHeight;
-                //get the current scroll distance
-                let scrolled = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop;
-
-                //calculate the popup positions
-                //if the current mouse X position plus the popup width is greater than the width of the viewport set the popup to the left, else right
-                let leftPosition = (e.pageX + popupWidth + buffer >= window.innerWidth) ? `${e.pageX - (popupWidth + buffer)}px` : `${e.pageX + buffer}px`;
-                //if the current mouse Y position (mius scroll distance) plus the popup height is greater than viewport height, set the popup above mouse, else below
-                let topPosition = ((e.pageY - scrolled) + popupHeight + buffer >= window.innerHeight) ? `${e.pageY - (popupHeight + buffer)}px` : `${e.pageY + buffer}px`;
-
-                //update the popup with the calculated values
-                container.style.left = leftPosition;
-                container.style.top = topPosition;
-
             });
 
             // Insert the container into the DOM
@@ -148,21 +148,21 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function getPotentialHover(node, domain) {
         switch (domain) {
-            case 'reddit.com':
-                return new RedditHover(node, getDomain(CURRENT_TAB));
-            case 'wikipedia.org':
-                return new WikipediaHover(node, getDomain(CURRENT_TAB));
-            case 'youtube.com':
-            case 'youtu.be':
-                return new YoutubeHover(node, getDomain(CURRENT_TAB));
-            case 'twitter.com':
-                return new TwitterHover(node, getDomain(CURRENT_TAB));
-            case 'stackoverflow.com':
-                return new StackExchangeHover(node, getDomain(CURRENT_TAB));
-            case 'soundcloud.com':
-                return new SoundCloudHover(node, getDomain(CURRENT_TAB));
-            case 'github.com':
-                return new GitHubHover(node, getDomain(CURRENT_TAB));
+            // case 'reddit.com':
+            //     return new RedditHover(node, getDomain(CURRENT_TAB));
+            // case 'wikipedia.org':
+            //     return new WikipediaHover(node, getDomain(CURRENT_TAB));
+            // case 'youtube.com':
+            // case 'youtu.be':
+            //     return new YoutubeHover(node, getDomain(CURRENT_TAB));
+            // case 'twitter.com':
+            //     return new TwitterHover(node, getDomain(CURRENT_TAB));
+            // case 'stackoverflow.com':
+            //     return new StackExchangeHover(node, getDomain(CURRENT_TAB));
+            // case 'soundcloud.com':
+            //     return new SoundCloudHover(node, getDomain(CURRENT_TAB));
+            // case 'github.com':
+            //     return new GitHubHover(node, getDomain(CURRENT_TAB));
 
                 // If the site has no custom template, it should be previewed using meta-data parsing
             default:
